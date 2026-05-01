@@ -47,6 +47,7 @@
 <script>
 let step = 0;
 let car = {};
+let lead = {};
 
 function send() {
   let input = document.getElementById("input").value;
@@ -117,6 +118,38 @@ let valueHigh = Math.round(value + 1000);
     step = 5;
   } 
   else if (step === 5) {
+  aiMsg.innerText =
+    "If you’d like, I can help you explore what kind of offers this might generate. Just let me know.";
+  step = 6;
+}
+
+// Lead capture
+else if (step === 6) {
+  if (input.toLowerCase().includes("yes")) {
+    aiMsg.innerText = "Great—what’s your name?";
+    step = 7;
+  } else {
+    aiMsg.innerText = "No problem—feel free to come back anytime.";
+  }
+}
+else if (step === 7) {
+  lead.name = input;
+  aiMsg.innerText = "What’s the best phone number to reach you?";
+  step = 8;
+}
+else if (step === 8) {
+  lead.phone = input;
+  aiMsg.innerText = "And your email?";
+  step = 9;
+}
+else if (step === 9) {
+  lead.email = input;
+
+  aiMsg.innerText =
+    "Perfect—someone will reach out shortly with more details on what your vehicle could bring.";
+
+  console.log("NEW LEAD:", lead, car);
+}
     aiMsg.innerText =
       "If you want, you can upload photos for a more precise range, or explore what offers this might generate.";
   }
