@@ -62,7 +62,29 @@ function send() {
   let reply = "";
 
   if (step === 0) {
-    reply = "Got it—what’s the year, make, and model?";
+  reply = "Got it—what’s the year, make, and model?";
+  step = 1;
+} 
+else if (step === 1) {
+  reply = "Nice—about how many miles are on it?";
+  step = 2;
+} 
+else if (step === 2) {
+  reply = "How would you describe the condition overall? Clean, average, or needs work?";
+  step = 3;
+} 
+else if (step === 3) {
+  reply = "Any warning lights or known mechanical issues?";
+  step = 4;
+} 
+else if (step === 4) {
+  reply = "Based on what you’re describing, a realistic trade range would be around $20,000 – $24,000.\n\nThis assumes typical mechanical condition.";
+  step = 5;
+} 
+else if (step === 5) {
+  reply = "If you want, I can help you see what kind of offers this might generate—totally up to you.";
+  step = 6;
+}
     step = 1;
   } 
   else if (step === 1) {
