@@ -86,8 +86,28 @@ function send() {
   else if (step === 4) {
     car.mechanical = input;
 
-    let valueLow = 20000;
-    let valueHigh = 24000;
+    // Basic pricing logic
+let basePrice = 30000;
+
+// Adjust for mileage
+let miles = parseInt(car.miles) || 0;
+let mileageAdjustment = (miles - 40000) * -0.10;
+
+// Adjust for condition
+let conditionAdj = 0;
+if (car.condition.toLowerCase().includes("clean")) conditionAdj = 1500;
+if (car.condition.toLowerCase().includes("average")) conditionAdj = 0;
+if (car.condition.toLowerCase().includes("work")) conditionAdj = -2000;
+
+// Adjust for mechanical
+let mechAdj = 0;
+if (car.mechanical.toLowerCase().includes("yes")) mechAdj = -3000;
+
+// Final value
+let value = basePrice + mileageAdjustment + conditionAdj + mechAdj;
+
+let valueLow = Math.round(value - 1000);
+let valueHigh = Math.round(value + 1000);
 
     aiMsg.innerText =
       "Based on what you told me, a realistic trade range would be around $" +
