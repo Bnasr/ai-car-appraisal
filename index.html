@@ -1,36 +1,98 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>AI Car Appraisal</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    #chat {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      height: 400px;
+      overflow-y: auto;
+    }
+    .msg { margin: 10px 0; }
+    .ai { color: blue; }
+    .user { color: green; text-align: right; }
+
+    #inputArea {
+      max-width: 600px;
+      margin: 10px auto;
+      display: flex;
+    }
+    input { flex: 1; padding: 10px; }
+    button { padding: 10px; }
+  </style>
+</head>
+
 <body>
 
-<h2>Test Chat</h2>
+<div id="chat">
+  <div class="msg ai">
+    Hey—happy to help. Are you looking to get a general idea of your car’s value or comparing an offer?
+  </div>
+</div>
 
-<div id="chat"></div>
-
-<input id="input">
-<button onclick="send()">Send</button>
+<div id="inputArea">
+  <input id="input" placeholder="Type here..." />
+  <button onclick="send()">Send</button>
+</div>
 
 <script>
 let step = 0;
 
 function send() {
   let input = document.getElementById("input").value;
+  if (!input) return;
+
   let chat = document.getElementById("chat");
 
-  chat.innerHTML += "<div>You: " + input + "</div>";
+  // User message
+  let userMsg = document.createElement("div");
+  userMsg.className = "msg user";
+  userMsg.innerText = input;
+  chat.appendChild(userMsg);
 
   let reply = "";
 
   if (step === 0) {
-    reply = "What car do you have?";
+    reply = "Got it—what’s the year, make, and model?";
     step = 1;
-  } else if (step === 1) {
-    reply = "How many miles?";
+  } 
+  else if (step === 1) {
+    reply = "About how many miles are on it?";
     step = 2;
-  } else {
-    reply = "Working!";
+  } 
+  else if (step === 2) {
+    reply = "How would you describe the condition? Clean, average, or needs work?";
+    step = 3;
+  } 
+  else if (step === 3) {
+    reply = "Any warning lights or mechanical issues?";
+    step = 4;
+  } 
+  else if (step === 4) {
+    reply = "Based on that, a realistic trade range would be around $20,000 – $24,000.\n\nThis assumes typical mechanical condition.";
+    step = 5;
+  } 
+  else if (step === 5) {
+    reply = "If you’d like, I can help you explore what kind of offers this might generate.";
+    step = 6;
   }
 
-  chat.innerHTML += "<div>AI: " + reply + "</div>";
+  let aiMsg = document.createElement("div");
+  aiMsg.className = "msg ai";
+  aiMsg.innerText = reply;
+  chat.appendChild(aiMsg);
+
+  document.getElementById("input").value = "";
+  chat.scrollTop = chat.scrollHeight;
 }
 </script>
 
