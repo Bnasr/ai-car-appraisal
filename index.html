@@ -17,28 +17,17 @@
       height: 400px;
       overflow-y: auto;
     }
-    .msg {
-      margin: 10px 0;
-    }
-    .ai {
-      color: blue;
-    }
-    .user {
-      color: green;
-      text-align: right;
-    }
+    .msg { margin: 10px 0; }
+    .ai { color: blue; }
+    .user { color: green; text-align: right; }
+
     #inputArea {
       max-width: 600px;
       margin: 10px auto;
       display: flex;
     }
-    input {
-      flex: 1;
-      padding: 10px;
-    }
-    button {
-      padding: 10px;
-    }
+    input { flex: 1; padding: 10px; }
+    button { padding: 10px; }
   </style>
 </head>
 
@@ -65,6 +54,7 @@ function send() {
 
   let chat = document.getElementById("chat");
 
+  // user message
   let userMsg = document.createElement("div");
   userMsg.className = "msg user";
   userMsg.innerText = input;
@@ -73,24 +63,25 @@ function send() {
   let aiMsg = document.createElement("div");
   aiMsg.className = "msg ai";
 
+  // FIXED FLOW
   if (step === 0) {
     aiMsg.innerText = "Got it—what’s the year, make, and model?";
-    step++;
+    step = 1;
   } 
   else if (step === 1) {
     car.details = input;
     aiMsg.innerText = "About how many miles are on it?";
-    step++;
+    step = 2;
   } 
   else if (step === 2) {
     car.miles = input;
     aiMsg.innerText = "How would you describe the condition? Clean, average, or needs work?";
-    step++;
+    step = 3;
   } 
   else if (step === 3) {
     car.condition = input;
     aiMsg.innerText = "Any warning lights or known mechanical issues?";
-    step++;
+    step = 4;
   } 
   else if (step === 4) {
     car.mechanical = input;
@@ -100,14 +91,14 @@ function send() {
 
     aiMsg.innerText =
       "Based on what you told me, a realistic trade range would be around $" +
-      valueLow + " - $" + valueHigh + ".\n\nThis assumes typical mechanical condition.";
+      valueLow + " - $" + valueHigh +
+      ".\n\nThis assumes typical mechanical condition.";
 
-    step++;
+    step = 5;
   } 
   else if (step === 5) {
     aiMsg.innerText =
-      "If you want, you can upload a few photos and I’ll tighten that range.\n\n" +
-      "Or if you’re thinking about selling, I can help you see what kind of offers this might generate.";
+      "If you want, you can upload photos for a more precise range, or explore what offers this might generate.";
   }
 
   chat.appendChild(aiMsg);
