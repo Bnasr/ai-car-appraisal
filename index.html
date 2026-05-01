@@ -56,35 +56,63 @@
 </div>
 
 <script>
+let step = 0;
+let car = {};
+
 function send() {
   let input = document.getElementById("input").value;
-
   if (!input) return;
 
   let chat = document.getElementById("chat");
 
-  // User message
   let userMsg = document.createElement("div");
   userMsg.className = "msg user";
   userMsg.innerText = input;
   chat.appendChild(userMsg);
 
-  // AI response (basic for now)
   let aiMsg = document.createElement("div");
   aiMsg.className = "msg ai";
 
-  if (input.toLowerCase().includes("offer")) {
-    aiMsg.innerText = "Got it—what’s the vehicle and what were you offered?";
-  } else {
-    aiMsg.innerText = "Got it—tell me the year, make, and model.";
+  if (step === 0) {
+    aiMsg.innerText = "Got it—what’s the year, make, and model?";
+    step++;
+  } 
+  else if (step === 1) {
+    car.details = input;
+    aiMsg.innerText = "About how many miles are on it?";
+    step++;
+  } 
+  else if (step === 2) {
+    car.miles = input;
+    aiMsg.innerText = "How would you describe the condition? Clean, average, or needs work?";
+    step++;
+  } 
+  else if (step === 3) {
+    car.condition = input;
+    aiMsg.innerText = "Any warning lights or known mechanical issues?";
+    step++;
+  } 
+  else if (step === 4) {
+    car.mechanical = input;
+
+    let valueLow = 20000;
+    let valueHigh = 24000;
+
+    aiMsg.innerText =
+      "Based on what you told me, a realistic trade range would be around $" +
+      valueLow + " - $" + valueHigh + ".\n\nThis assumes typical mechanical condition.";
+
+    step++;
+  } 
+  else if (step === 5) {
+    aiMsg.innerText =
+      "If you want, you can upload a few photos and I’ll tighten that range.\n\n" +
+      "Or if you’re thinking about selling, I can help you see what kind of offers this might generate.";
   }
 
   chat.appendChild(aiMsg);
 
-  // Clear input
   document.getElementById("input").value = "";
-
-  // Auto scroll
   chat.scrollTop = chat.scrollHeight;
 }
 </script>
