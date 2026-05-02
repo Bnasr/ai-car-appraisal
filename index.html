@@ -25,7 +25,6 @@ function send() {
 
   let chat = document.getElementById("chat");
 
-  // show user message
   chat.innerHTML += "<div><b>You:</b> " + input + "</div>";
 
   let reply = "";
@@ -59,7 +58,7 @@ function send() {
 
     let conditionAdj = 0;
     if (car.condition.includes("clean")) conditionAdj = 1000;
-    if (car.condition.includes("average")) conditionAdj = 1500;
+    if (car.condition.includes("average")) conditionAdj = -1500;
     if (car.condition.includes("work")) conditionAdj = -3500;
 
     let mechAdj = 0;
@@ -70,8 +69,9 @@ function send() {
     let low = Math.round(value - 1500);
     let high = Math.round(value + 1500);
 
-    reply = "Based on what you described, a more realistic trade range would be around $" 
-            + low + " - $" + high;
+    reply = "Based on what you described, a realistic trade range would likely fall around $" 
+            + low + " - $" + high +
+            ".\n\nKeep in mind this can vary depending on in-person inspection.";
 
     step = 5;
   } 
@@ -79,26 +79,20 @@ function send() {
     reply = "Want to explore offers? (yes/no)";
     step = 6;
   } 
- else if (step === 6) {
-  let answer = input.toLowerCase();
+  else if (step === 6) {
+    let answer = input.toLowerCase();
 
-  if (answer === "yes") {
-    reply = "What’s your name?";
-    step = 7;
-  } 
-  else if (answer === "no") {
-    reply = "No problem at all—if you change your mind, just type 'yes' anytime.";
-    step = 6;
-  } 
-  else {
-    reply = "Just let me know if you'd like to explore offers—type 'yes' or 'no'.";
-    step = 6;
-  }
-}
+    if (answer === "yes") {
+      reply = "What’s your name?";
       step = 7;
-    } else {
-      reply = "No problem at all—feel free to come back anytime if you want to take it further.";
-    step = 100; // lock flow
+    } 
+    else if (answer === "no") {
+      reply = "No problem at all—if you change your mind, just type 'yes' anytime.";
+      step = 6;
+    } 
+    else {
+      reply = "Just let me know if you'd like to explore offers—type 'yes' or 'no'.";
+      step = 6;
     }
   } 
   else if (step === 7) {
