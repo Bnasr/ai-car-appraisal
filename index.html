@@ -60,10 +60,10 @@ function send() {
     let conditionAdj = 0;
     if (car.condition.includes("clean")) conditionAdj = 1000;
     if (car.condition.includes("average")) conditionAdj = 1500;
-    if (car.condition.includes("work")) conditionAdj = -5000;
+    if (car.condition.includes("work")) conditionAdj = -3500;
 
     let mechAdj = 0;
-    if (car.mechanical.includes("yes") || car.mechanical.includes("light")) mechAdj = -6000;
+    if (car.mechanical.includes("yes") || car.mechanical.includes("light")) mechAdj = -4000;
 
     let value = basePrice + mileageAdj + conditionAdj + mechAdj;
 
@@ -84,7 +84,8 @@ function send() {
       reply = "What’s your name?";
       step = 7;
     } else {
-      reply = "No problem!";
+      reply = "No problem at all—feel free to come back anytime if you want to take it further.";
+    step = 100; // lock flow
     }
   } 
   else if (step === 7) {
