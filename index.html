@@ -79,9 +79,22 @@ function send() {
     reply = "Want to explore offers? (yes/no)";
     step = 6;
   } 
-  else if (step === 6) {
-    if (input.toLowerCase() === "yes") {
-      reply = "What’s your name?";
+ else if (step === 6) {
+  let answer = input.toLowerCase();
+
+  if (answer === "yes") {
+    reply = "What’s your name?";
+    step = 7;
+  } 
+  else if (answer === "no") {
+    reply = "No problem at all—if you change your mind, just type 'yes' anytime.";
+    step = 6;
+  } 
+  else {
+    reply = "Just let me know if you'd like to explore offers—type 'yes' or 'no'.";
+    step = 6;
+  }
+}
       step = 7;
     } else {
       reply = "No problem at all—feel free to come back anytime if you want to take it further.";
