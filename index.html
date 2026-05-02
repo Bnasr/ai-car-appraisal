@@ -52,23 +52,23 @@ function send() {
   else if (step === 4) {
     car.mechanical = input.toLowerCase();
 
-    let basePrice = 30000;
+    let basePrice = 27000;
 
     let miles = parseInt(car.miles) || 0;
     let mileageAdj = (miles - 40000) * -0.1;
 
     let conditionAdj = 0;
-    if (car.condition.includes("clean")) conditionAdj = 1500;
-    if (car.condition.includes("average")) conditionAdj = 0;
-    if (car.condition.includes("work")) conditionAdj = -2500;
+    if (car.condition.includes("clean")) conditionAdj = 1000;
+    if (car.condition.includes("average")) conditionAdj = 1500;
+    if (car.condition.includes("work")) conditionAdj = -5000;
 
     let mechAdj = 0;
-    if (car.mechanical.includes("yes") || car.mechanical.includes("light")) mechAdj = -3000;
+    if (car.mechanical.includes("yes") || car.mechanical.includes("light")) mechAdj = -6000;
 
     let value = basePrice + mileageAdj + conditionAdj + mechAdj;
 
-    let low = Math.round(value - 1000);
-    let high = Math.round(value + 1000);
+    let low = Math.round(value - 1500);
+    let high = Math.round(value + 1500);
 
     reply = "Based on what you described, a more realistic trade range would be around $" 
             + low + " - $" + high;
