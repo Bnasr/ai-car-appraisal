@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>AI Car Appraisal</title>
+  <title>AI Automotive Assistant</title>
 
   <style>
     body {
@@ -21,7 +21,7 @@
       background: white;
       border: 1px solid #ccc;
       padding: 15px;
-      height: 400px;
+      height: 450px;
       overflow-y: auto;
       margin-bottom: 15px;
     }
@@ -52,7 +52,7 @@
 
 <body>
 
-<h2>AI Car Appraisal</h2>
+<h2>AI Automotive Assistant</h2>
 
 <div id="chat"></div>
 
@@ -120,9 +120,9 @@ function send() {
   // STEP 2
   else if (step === 2) {
 
-    car.miles = parseInt(input) || 0;
+    car.yearMakeModel = input;
 
-    reply = "Condition? (clean / average / needs work)";
+    reply = "How many miles are on the vehicle?";
 
     step = 3;
   }
@@ -130,15 +130,25 @@ function send() {
   // STEP 3
   else if (step === 3) {
 
-    car.condition = input.toLowerCase();
+    car.miles = parseInt(input) || 0;
 
-    reply = "Any mechanical issues?";
+    reply = "How would you describe the condition? (clean / average / needs work)";
 
     step = 4;
   }
 
   // STEP 4
   else if (step === 4) {
+
+    car.condition = input.toLowerCase();
+
+    reply = "Are there any mechanical issues or warning lights?";
+
+    step = 5;
+  }
+
+  // STEP 5
+  else if (step === 5) {
 
     car.mechanical = input.toLowerCase();
 
@@ -178,20 +188,20 @@ function send() {
       high +
       ". Keep in mind final value depends on inspection and market conditions.";
 
-    step = 5;
-  }
-
-  // STEP 5
-  else if (step === 5) {
-
-    reply =
-    "If you'd like, I can also help you explore real dealer offers or trade options.\n\nWould you like to continue? (yes/no)";
-
     step = 6;
   }
 
   // STEP 6
   else if (step === 6) {
+
+    reply =
+      "If you'd like, I can also help you explore real dealer offers or trade options. Would you like to continue? (yes/no)";
+
+    step = 7;
+  }
+
+  // STEP 7
+  else if (step === 7) {
 
     let answer = input.toLowerCase();
 
@@ -199,40 +209,30 @@ function send() {
 
       reply = "What’s your name?";
 
-      step = 7;
+      step = 8;
     }
 
     else if (answer === "no") {
 
       reply = "No problem at all — feel free to come back anytime.";
 
-      step = 6;
+      step = 7;
     }
 
     else {
 
       reply = "Please type yes or no.";
 
-      step = 6;
+      step = 7;
     }
-  }
-
-  // STEP 7
-  else if (step === 7) {
-
-    car.name = input;
-
-    reply = "What’s your phone number?";
-
-    step = 8;
   }
 
   // STEP 8
   else if (step === 8) {
 
-    car.phone = input;
+    car.name = input;
 
-    reply = "What’s your email address?";
+    reply = "What’s your phone number?";
 
     step = 9;
   }
@@ -240,23 +240,45 @@ function send() {
   // STEP 9
   else if (step === 9) {
 
-    car.email = input;
+    car.phone = input;
 
-    reply =
-  "Thanks, your information has been submitted successfully.\n\nA participating dealer may reach out with possible options based on your vehicle details.";
+    reply = "What’s your email address?";
 
     step = 10;
   }
 
+  // STEP 10
+  else if (step === 10) {
+
+    car.email = input;
+
+    reply =
+      "Thanks, your information has been submitted successfully. A participating dealer may reach out with possible options based on your vehicle details.";
+
+    step = 11;
+  }
+
   else {
 
-    reply = "Thanks for using AI Car Appraisal.";
+    reply =
+      "I’m still here if you’d like help with vehicle research, trade options, or purchase questions.";
+
   }
 
   addMessage("AI", reply, "ai");
 
   inputBox.value = "";
 }
+
+// ENTER KEY SUPPORT
+document.getElementById("input")
+  .addEventListener("keypress", function(event) {
+
+    if (event.key === "Enter") {
+      send();
+    }
+
+});
 
 </script>
 
