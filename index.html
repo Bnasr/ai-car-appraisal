@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>AI Car Appraisal</title>
 </head>
@@ -12,8 +13,6 @@
 
 <input id="input" type="text">
 <button onclick="send()">Send</button>
-
-<script>
 
 <script>
 
@@ -39,13 +38,17 @@ function send() {
   let reply = "";
 
   if (step === 0) {
+
     reply = "What’s the year, make, and model?";
     step = 1;
+
   }
 
   else if (step === 1) {
+
     reply = "How many miles?";
     step = 2;
+
   }
 
   else if (step === 2) {
@@ -54,6 +57,7 @@ function send() {
 
     reply = "Condition? (clean / average / needs work)";
     step = 3;
+
   }
 
   else if (step === 3) {
@@ -62,6 +66,7 @@ function send() {
 
     reply = "Any mechanical issues?";
     step = 4;
+
   }
 
   else if (step === 4) {
@@ -105,10 +110,69 @@ function send() {
       ".";
 
     step = 5;
+
+  }
+
+  else if (step === 5) {
+
+    reply = "Would you like to explore possible offers? (yes/no)";
+    step = 6;
+
+  }
+
+  else if (step === 6) {
+
+    let answer = input.toLowerCase();
+
+    if (answer === "yes") {
+
+      reply = "What’s your name?";
+      step = 7;
+
+    }
+
+    else if (answer === "no") {
+
+      reply = "No problem at all — feel free to come back anytime.";
+      step = 6;
+
+    }
+
+    else {
+
+      reply = "Please type yes or no.";
+      step = 6;
+
+    }
+
+  }
+
+  else if (step === 7) {
+
+    reply = "What’s your phone number?";
+    step = 8;
+
+  }
+
+  else if (step === 8) {
+
+    reply = "What’s your email address?";
+    step = 9;
+
+  }
+
+  else if (step === 9) {
+
+    reply = "Thank you — a dealer will contact you shortly.";
+
+    step = 10;
+
   }
 
   else {
+
     reply = "Thanks for using AI Car Appraisal.";
+
   }
 
   chat.innerHTML += "<p><b>AI:</b> " + reply + "</p>";
@@ -120,4 +184,5 @@ function send() {
 </script>
 
 </body>
+
 </html>
