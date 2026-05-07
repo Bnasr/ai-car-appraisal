@@ -6,48 +6,60 @@
 
   <style>
     body {
-      font-family: Arial;
-      max-width: 700px;
+      font-family: Arial, sans-serif;
+      max-width: 750px;
       margin: 40px auto;
       padding: 20px;
-      background: #f5f5f5;
+      background: #f4f4f4;
     }
 
     h2 {
       text-align: center;
+      color: #222;
     }
 
     #chat {
       background: white;
       border: 1px solid #ccc;
+      border-radius: 10px;
       padding: 15px;
-      height: 450px;
+      height: 500px;
       overflow-y: auto;
       margin-bottom: 15px;
     }
 
     .user {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      color: #111;
     }
 
     .ai {
-      margin-bottom: 15px;
+      margin-bottom: 18px;
       color: #0b5394;
     }
 
     input {
-      width: 75%;
-      padding: 10px;
+      width: 74%;
+      padding: 12px;
       font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
 
     button {
-      padding: 10px 20px;
+      padding: 12px 20px;
       font-size: 16px;
+      border: none;
+      background: #0b5394;
+      color: white;
+      border-radius: 6px;
       cursor: pointer;
     }
-  </style>
 
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
 </head>
 
 <body>
@@ -56,7 +68,7 @@
 
 <div id="chat"></div>
 
-<input id="input" type="text" placeholder="Type here...">
+<input id="input" type="text" placeholder="Type your message here..." />
 
 <button onclick="send()">Send</button>
 
@@ -90,18 +102,15 @@ function addMessage(sender, text, className) {
 function send() {
 
   let inputBox = document.getElementById("input");
-
   let input = inputBox.value.trim();
 
-  if (input === "") {
-    return;
-  }
+  if (input === "") return;
 
   addMessage("You", input, "user");
 
   let reply = "";
 
-  // STEP 0
+  // STEP 0 - Greeting
   if (step === 0) {
 
     reply = "Hello! I’m your AI automotive assistant — how can I help make your visit easier today?";
@@ -109,7 +118,7 @@ function send() {
     step = 1;
   }
 
-  // STEP 1
+  // STEP 1 - Understand Intent
   else if (step === 1) {
 
     reply = "Absolutely — I’d be happy to help with that. What’s the year, make, and model of the vehicle?";
@@ -117,7 +126,7 @@ function send() {
     step = 2;
   }
 
-  // STEP 2
+  // STEP 2 - Vehicle Info
   else if (step === 2) {
 
     car.yearMakeModel = input;
@@ -127,17 +136,17 @@ function send() {
     step = 3;
   }
 
-  // STEP 3
+  // STEP 3 - Mileage
   else if (step === 3) {
 
-    car.miles = parseInt(input) || 0;
+    car.miles = parseInt(input.replace(/,/g, "")) || 0;
 
     reply = "How would you describe the condition? (clean / average / needs work)";
 
     step = 4;
   }
 
-  // STEP 4
+  // STEP 4 - Condition
   else if (step === 4) {
 
     car.condition = input.toLowerCase();
@@ -147,7 +156,7 @@ function send() {
     step = 5;
   }
 
-  // STEP 5
+  // STEP 5 - Mechanical + Value
   else if (step === 5) {
 
     car.mechanical = input.toLowerCase();
@@ -167,13 +176,15 @@ function send() {
     }
 
     if (car.condition.includes("work")) {
-      value -= 3000;
+      value -= 3500;
     }
 
     // mechanical adjustment
     if (
       car.mechanical.includes("yes") ||
-      car.mechanical.includes("light")
+      car.mechanical.includes("light") ||
+      car.mechanical.includes("issue") ||
+      car.mechanical.includes("warning")
     ) {
       value -= 4000;
     }
@@ -186,37 +197,55 @@ function send() {
       low +
       " - $" +
       high +
-      ". Keep in mind final value depends on inspection and market conditions.";
+      ". Keep in mind final value can vary depending on inspection, market conditions, and dealership demand.";
 
     step = 6;
   }
 
-  // STEP 6
+  // STEP 6 - Continue Conversation
   else if (step === 6) {
 
-    reply =
-      "If you'd like, I can also help you explore real dealer offers or trade options. Would you like to continue? (yes/no)";
+    let lowerInput = input.toLowerCase();
 
-    step = 7;
+    if (
+      lowerInput.includes("dealer") ||
+      lowerInput.includes("offer") ||
+      lowerInput.includes("trade")
+    ) {
+
+      reply =
+        "Trade values can vary slightly between dealerships depending on market demand, vehicle condition, and inventory needs. If you'd like, I can also help you explore possible dealer offers or next steps. Would you like to continue? (yes/no)";
+
+      step = 7;
+    }
+
+    else {
+
+      reply =
+        "If you'd like, I can also help you explore possible dealer offers or next steps. Would you like to continue? (yes/no)";
+
+      step = 7;
+    }
   }
 
-  // STEP 7
+  // STEP 7 - Yes/No Decision
   else if (step === 7) {
 
     let answer = input.toLowerCase();
 
     if (answer === "yes") {
 
-      reply = "What’s your name?";
+      reply = "Great — what’s your name?";
 
       step = 8;
     }
 
     else if (answer === "no") {
 
-      reply = "No problem at all — feel free to come back anytime.";
+      reply =
+        "No problem at all — I’m still here if you’d like help with vehicle research, trade options, or purchase questions anytime.";
 
-      step = 7;
+      step = 12;
     }
 
     else {
@@ -227,7 +256,7 @@ function send() {
     }
   }
 
-  // STEP 8
+  // STEP 8 - Name
   else if (step === 8) {
 
     car.name = input;
@@ -237,7 +266,7 @@ function send() {
     step = 9;
   }
 
-  // STEP 9
+  // STEP 9 - Phone
   else if (step === 9) {
 
     car.phone = input;
@@ -247,7 +276,7 @@ function send() {
     step = 10;
   }
 
-  // STEP 10
+  // STEP 10 - Email
   else if (step === 10) {
 
     car.email = input;
@@ -258,11 +287,47 @@ function send() {
     step = 11;
   }
 
-  else {
+  // STEP 11 - Open Assistant Mode
+  else if (step === 11) {
 
     reply =
-      "I’m still here if you’d like help with vehicle research, trade options, or purchase questions.";
+      "I’m still here if you’d like help researching vehicles, exploring trade options, or learning more about the buying process.";
 
+    step = 12;
+  }
+
+  // STEP 12 - General Assistant Responses
+  else if (step === 12) {
+
+    let lowerInput = input.toLowerCase();
+
+    if (
+      lowerInput.includes("new") ||
+      lowerInput.includes("pricing") ||
+      lowerInput.includes("payment")
+    ) {
+
+      reply =
+        "I’d be happy to help explore options. Are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
+
+    }
+
+    else if (
+      lowerInput.includes("trade") ||
+      lowerInput.includes("value")
+    ) {
+
+      reply =
+        "I can definitely help with trade values and vehicle appraisals. What vehicle would you like to discuss?";
+
+      step = 2;
+    }
+
+    else {
+
+      reply =
+        "I’m here to help with trade values, vehicle research, purchase options, and dealership questions. What would you like help with?";
+    }
   }
 
   addMessage("AI", reply, "ai");
@@ -271,12 +336,11 @@ function send() {
 }
 
 // ENTER KEY SUPPORT
-document.getElementById("input")
-  .addEventListener("keypress", function(event) {
+document.getElementById("input").addEventListener("keypress", function(event) {
 
-    if (event.key === "Enter") {
-      send();
-    }
+  if (event.key === "Enter") {
+    send();
+  }
 
 });
 
