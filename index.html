@@ -15,7 +15,13 @@
 
 <script>
 
+<script>
+
 let step = 0;
+
+let carMiles = 0;
+let carCondition = "";
+let carMechanical = "";
 
 function send() {
 
@@ -43,17 +49,61 @@ function send() {
   }
 
   else if (step === 2) {
+
+    carMiles = parseInt(input);
+
     reply = "Condition? (clean / average / needs work)";
     step = 3;
   }
 
   else if (step === 3) {
+
+    carCondition = input.toLowerCase();
+
     reply = "Any mechanical issues?";
     step = 4;
   }
 
   else if (step === 4) {
-    reply = "Estimated trade range: $20,000 - $24,000";
+
+    carMechanical = input.toLowerCase();
+
+    let value = 27000;
+
+    // mileage adjustment
+    value = value - ((carMiles - 40000) * 0.05);
+
+    // condition adjustment
+    if (carCondition.includes("clean")) {
+      value += 1000;
+    }
+
+    if (carCondition.includes("average")) {
+      value -= 1000;
+    }
+
+    if (carCondition.includes("work")) {
+      value -= 3000;
+    }
+
+    // mechanical adjustment
+    if (
+      carMechanical.includes("yes") ||
+      carMechanical.includes("light")
+    ) {
+      value -= 4000;
+    }
+
+    let low = Math.round(value - 1500);
+    let high = Math.round(value + 1500);
+
+    reply =
+      "Based on what you described, a realistic trade range would likely fall around $" +
+      low +
+      " - $" +
+      high +
+      ".";
+
     step = 5;
   }
 
