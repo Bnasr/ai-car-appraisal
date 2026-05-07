@@ -7,10 +7,10 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 750px;
+      background: #f4f4f4;
+      max-width: 800px;
       margin: 40px auto;
       padding: 20px;
-      background: #f4f4f4;
     }
 
     h2 {
@@ -22,9 +22,9 @@
       background: white;
       border: 1px solid #ccc;
       border-radius: 10px;
-      padding: 15px;
-      height: 500px;
+      height: 520px;
       overflow-y: auto;
+      padding: 15px;
       margin-bottom: 15px;
     }
 
@@ -69,26 +69,28 @@
 <div id="chat"></div>
 
 <input id="input" type="text" placeholder="Type your message here..." />
-
 <button onclick="send()">Send</button>
 
 <script>
 
 let step = 0;
 
-let car = {
-  yearMakeModel: "",
+let customer = {
+  intent: "",
+  vehicle: "",
   miles: 0,
   condition: "",
   mechanical: "",
   name: "",
   phone: "",
-  email: ""
+  email: "",
+  paymentGoal: "",
+  payoff: ""
 };
 
 function addMessage(sender, text, className) {
 
-  let chat = document.getElementById("chat");
+  const chat = document.getElementById("chat");
 
   chat.innerHTML += `
     <div class="${className}">
@@ -101,90 +103,126 @@ function addMessage(sender, text, className) {
 
 function send() {
 
-  let inputBox = document.getElementById("input");
-  let input = inputBox.value.trim();
+  const inputBox = document.getElementById("input");
+  const input = inputBox.value.trim();
 
   if (input === "") return;
 
   addMessage("You", input, "user");
+
+  const lowerInput = input.toLowerCase();
 
   let reply = "";
 
   // STEP 0 - Greeting
   if (step === 0) {
 
-    reply = "Hello! I’m your AI automotive assistant — how can I help make your visit easier today?";
+    reply =
+      "Hello! I’m your AI automotive assistant — how can I help make your visit easier today?";
 
     step = 1;
   }
 
-  // STEP 1 - Understand Intent
+  // STEP 1 - Intent Recognition
   else if (step === 1) {
 
-    reply = "Absolutely — I’d be happy to help with that. What’s the year, make, and model of the vehicle?";
+    customer.intent = input;
 
-    step = 2;
+    if (
+      lowerInput.includes("sell") ||
+      lowerInput.includes("trade") ||
+      lowerInput.includes("value")
+    ) {
+
+      reply =
+        "Absolutely — I’d be happy to help with that. What’s the year, make, and model of the vehicle?";
+
+      step = 2;
+    }
+
+    else if (
+      lowerInput.includes("buy") ||
+      lowerInput.includes("payment") ||
+      lowerInput.includes("lease") ||
+      lowerInput.includes("looking")
+    ) {
+
+      reply =
+        "Absolutely — are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
+
+      step = 20;
+    }
+
+    else {
+
+      reply =
+        "I can help with trade values, vehicle research, purchase options, and dealership questions. What would you like help with?";
+
+      step = 1;
+    }
   }
 
-  // STEP 2 - Vehicle Info
+  // =========================
+  // TRADE APPRAISAL FLOW
+  // =========================
+
   else if (step === 2) {
 
-    car.yearMakeModel = input;
+    customer.vehicle = input;
 
     reply = "How many miles are on the vehicle?";
 
     step = 3;
   }
 
-  // STEP 3 - Mileage
   else if (step === 3) {
 
-    car.miles = parseInt(input.replace(/,/g, "")) || 0;
+    customer.miles = parseInt(input.replace(/,/g, "")) || 0;
 
-    reply = "How would you describe the condition? (clean / average / needs work)";
+    reply =
+      "How would you describe the condition? (clean / average / needs work)";
 
     step = 4;
   }
 
-  // STEP 4 - Condition
   else if (step === 4) {
 
-    car.condition = input.toLowerCase();
+    customer.condition = lowerInput;
 
     reply = "Are there any mechanical issues or warning lights?";
 
     step = 5;
   }
 
-  // STEP 5 - Mechanical + Value
   else if (step === 5) {
 
-    car.mechanical = input.toLowerCase();
+    customer.mechanical = lowerInput;
 
     let value = 27000;
 
     // mileage adjustment
-    value -= (car.miles - 40000) * 0.05;
+    value -= (customer.miles - 40000) * 0.05;
 
     // condition adjustment
-    if (car.condition.includes("clean")) {
+    if (customer.condition.includes("clean")) {
       value += 1000;
     }
 
-    if (car.condition.includes("average")) {
+    if (customer.condition.includes("average")) {
       value -= 1000;
     }
 
-    if (car.condition.includes("work")) {
+    if (customer.condition.includes("work")) {
       value -= 3500;
     }
 
     // mechanical adjustment
     if (
-      car.mechanical.includes("yes") ||
-      car.mechanical.includes("light") ||
-      car.mechanical.includes("issue") ||
-      car.mechanical.includes("warning")
+      customer.mechanical.includes("yes") ||
+      customer.mechanical.includes("light") ||
+      customer.mechanical.includes("issue") ||
+      customer.mechanical.includes("warning") ||
+      customer.mechanical.includes("engine")
     ) {
       value -= 4000;
     }
@@ -202,50 +240,30 @@ function send() {
     step = 6;
   }
 
-  // STEP 6 - Continue Conversation
   else if (step === 6) {
 
-    let lowerInput = input.toLowerCase();
+    reply =
+      "If you'd like, I can also help you explore possible dealer offers or purchase options. Would you like to continue? (yes/no)";
 
-    if (
-      lowerInput.includes("dealer") ||
-      lowerInput.includes("offer") ||
-      lowerInput.includes("trade")
-    ) {
-
-      reply =
-        "Trade values can vary slightly between dealerships depending on market demand, vehicle condition, and inventory needs. If you'd like, I can also help you explore possible dealer offers or next steps. Would you like to continue? (yes/no)";
-
-      step = 7;
-    }
-
-    else {
-
-      reply =
-        "If you'd like, I can also help you explore possible dealer offers or next steps. Would you like to continue? (yes/no)";
-
-      step = 7;
-    }
+    step = 7;
   }
 
-  // STEP 7 - Yes/No Decision
   else if (step === 7) {
 
-    let answer = input.toLowerCase();
+    if (lowerInput === "yes") {
 
-    if (answer === "yes") {
-
-      reply = "Great — what’s your name?";
+      reply =
+        "Great — do you currently have a payoff remaining on the vehicle, or is it fully paid off?";
 
       step = 8;
     }
 
-    else if (answer === "no") {
+    else if (lowerInput === "no") {
 
       reply =
-        "No problem at all — I’m still here if you’d like help with vehicle research, trade options, or purchase questions anytime.";
+        "No problem at all — I’m still here if you’d like help with vehicle research, purchase options, or dealership questions anytime.";
 
-      step = 12;
+      step = 100;
     }
 
     else {
@@ -256,59 +274,120 @@ function send() {
     }
   }
 
-  // STEP 8 - Name
   else if (step === 8) {
 
-    car.name = input;
+    customer.payoff = input;
+
+    reply =
+      "Are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
+
+    step = 20;
+  }
+
+  // =========================
+  // SHOPPING FLOW
+  // =========================
+
+  else if (step === 20) {
+
+    customer.vehicleType = input;
+
+    reply =
+      "Do you have a target monthly payment range in mind?";
+
+    step = 21;
+  }
+
+  else if (step === 21) {
+
+    customer.paymentGoal = input;
+
+    reply =
+      "Great — are you interested in a sedan, SUV, truck, or still exploring options?";
+
+    step = 22;
+  }
+
+  else if (step === 22) {
+
+    customer.bodyStyle = input;
+
+    reply =
+      "Perfect — I can help explore options that may fit your preferences and payment goals. Would you like to connect with a dealership team member to continue the process or schedule a test drive? (yes/no)";
+
+    step = 30;
+  }
+
+  // =========================
+  // LEAD CAPTURE
+  // =========================
+
+  else if (step === 30) {
+
+    if (lowerInput === "yes") {
+
+      reply = "Great — what’s your name?";
+
+      step = 31;
+    }
+
+    else if (lowerInput === "no") {
+
+      reply =
+        "No problem at all — I’m still here if you’d like help researching vehicles or exploring your options further.";
+
+      step = 100;
+    }
+
+    else {
+
+      reply = "Please type yes or no.";
+
+      step = 30;
+    }
+  }
+
+  else if (step === 31) {
+
+    customer.name = input;
 
     reply = "What’s your phone number?";
 
-    step = 9;
+    step = 32;
   }
 
-  // STEP 9 - Phone
-  else if (step === 9) {
+  else if (step === 32) {
 
-    car.phone = input;
+    customer.phone = input;
 
     reply = "What’s your email address?";
 
-    step = 10;
+    step = 33;
   }
 
-  // STEP 10 - Email
-  else if (step === 10) {
+  else if (step === 33) {
 
-    car.email = input;
+    customer.email = input;
 
     reply =
-      "Thanks, your information has been submitted successfully. A participating dealer may reach out with possible options based on your vehicle details.";
+      "Thanks, your information has been submitted successfully. A participating dealership team member may reach out to assist with next steps, vehicle options, or scheduling a visit.";
 
-    step = 11;
+    step = 100;
   }
 
-  // STEP 11 - Open Assistant Mode
-  else if (step === 11) {
+  // =========================
+  // OPEN ASSISTANT MODE
+  // =========================
 
-    reply =
-      "I’m still here if you’d like help researching vehicles, exploring trade options, or learning more about the buying process.";
-
-    step = 12;
-  }
-
-  // STEP 12 - General Assistant Responses
-  else if (step === 12) {
-
-    let lowerInput = input.toLowerCase();
+  else if (step === 100) {
 
     if (
-      lowerInput.includes("new") ||
-      lowerInput.includes("pricing") ||
-      lowerInput.includes("payment")
+      lowerInput.includes("payment") ||
+      lowerInput.includes("$")
     ) {
 
       reply =
-        "I’d be happy to help explore options. Are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
+        "I can definitely help explore options around your target payment. Are you considering new, certified pre-owned, or pre-owned vehicles?";
 
     }
 
@@ -318,9 +397,28 @@ function send() {
     ) {
 
       reply =
-        "I can definitely help with trade values and vehicle appraisals. What vehicle would you like to discuss?";
+        "I’d be happy to help with a trade appraisal. What’s the year, make, and model of the vehicle?";
 
       step = 2;
+    }
+
+    else if (
+      lowerInput.includes("buying process") ||
+      lowerInput.includes("process")
+    ) {
+
+      reply =
+        "The process usually starts with researching vehicle options and evaluating your trade if you have one. From there, we can explore payment goals, vehicle choices, test drives, and then connect you with a dealership team member when you're ready.";
+
+    }
+
+    else if (
+      lowerInput.includes("payoff")
+    ) {
+
+      reply =
+        "Having a payoff is completely normal. Once we understand your approximate payoff amount and trade value, we can help explore vehicle options and payment ranges that may work best for you.";
+
     }
 
     else {
