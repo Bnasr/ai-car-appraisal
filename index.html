@@ -104,7 +104,7 @@ function send() {
   // STEP 0
   if (step === 0) {
 
-    reply = "What’s the year, make, and model?";
+    reply = "Hello! I’m your AI automotive assistant — how can I help make your visit easier today?";
 
     step = 1;
   }
@@ -112,9 +112,7 @@ function send() {
   // STEP 1
   else if (step === 1) {
 
-    car.yearMakeModel = input;
-
-    reply = "How many miles?";
+    reply = "Absolutely — I’d be happy to help with that. What’s the year, make, and model of the vehicle?";
 
     step = 2;
   }
