@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>AI Automotive Assistant</title>
 
   <style>
@@ -9,7 +14,7 @@
     body {
       font-family: Arial, sans-serif;
       background: #f4f4f4;
-      max-width: 850px;
+      max-width: 900px;
       margin: 40px auto;
       padding: 20px;
     }
@@ -17,49 +22,56 @@
     h2 {
       text-align: center;
       color: #222;
+      margin-bottom: 20px;
     }
 
     #chat {
       background: white;
       border: 1px solid #ccc;
       border-radius: 10px;
-      height: 550px;
+      height: 560px;
       overflow-y: auto;
-      padding: 15px;
+      padding: 20px;
       margin-bottom: 15px;
     }
 
     .user {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       color: #111;
-    }
-
-    .ai {
-      margin-bottom: 18px;
-      color: #0b5394;
       line-height: 1.5;
     }
 
+    .ai {
+      margin-bottom: 20px;
+      color: #0b5394;
+      line-height: 1.6;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
     input {
-      width: 74%;
-      padding: 12px;
+      flex: 1;
+      padding: 14px;
       font-size: 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px solid #ccc;
     }
 
     button {
-      padding: 12px 20px;
+      padding: 14px 22px;
       font-size: 16px;
       border: none;
       background: #0b5394;
       color: white;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
     }
 
     button:hover {
-      opacity: 0.9;
+      opacity: 0.92;
     }
 
   </style>
@@ -72,27 +84,43 @@
 
 <div id="chat"></div>
 
-<input id="input" type="text" placeholder="Type your message here..." />
+<div class="input-area">
 
-<button onclick="send()">Send</button>
+  <input
+    id="input"
+    type="text"
+    placeholder="Type your message here..."
+  />
+
+  <button onclick="send()">Send</button>
+
+</div>
 
 <script>
 
 let step = 0;
 
 let customer = {
+
   intent: "",
+
   vehicle: "",
   miles: 0,
   condition: "",
   mechanical: "",
-  payoff: "",
+
+  payoffStatus: "",
+
+  shoppingType: "",
   paymentGoal: "",
   bodyStyle: "",
-  vehicleType: "",
+
+  tradeMentioned: false,
+
   name: "",
   phone: "",
   email: ""
+
 };
 
 function addMessage(sender, text, className) {
@@ -106,35 +134,69 @@ function addMessage(sender, text, className) {
   `;
 
   chat.scrollTop = chat.scrollHeight;
+
+}
+
+function containsAny(text, keywords) {
+
+  return keywords.some(word => text.includes(word));
+
 }
 
 function isSoftNo(text) {
 
-  text = text.toLowerCase();
+  return containsAny(text, [
+    "no",
+    "not now",
+    "later",
+    "maybe later",
+    "not today",
+    "unsure",
+    "maybe",
+    "not yet"
+  ]);
 
-  return (
-    text.includes("no") ||
-    text.includes("not now") ||
-    text.includes("later") ||
-    text.includes("maybe") ||
-    text.includes("not today") ||
-    text.includes("unsure")
-  );
 }
 
 function isConversationEnd(text) {
 
-  text = text.toLowerCase();
+  return containsAny(text, [
+    "thanks",
+    "thank you",
+    "thx",
+    "bye",
+    "goodbye",
+    "nothing",
+    "all set",
+    "that's all",
+    "thats all"
+  ]);
 
-  return (
-    text.includes("thanks") ||
-    text.includes("thank you") ||
-    text.includes("thx") ||
-    text.includes("bye") ||
-    text.includes("goodbye") ||
-    text.includes("nothing") ||
-    text.includes("all set")
-  );
+}
+
+function isTradeIntent(text) {
+
+  return containsAny(text, [
+    "trade",
+    "sell",
+    "value",
+    "appraisal"
+  ]);
+
+}
+
+function isShoppingIntent(text) {
+
+  return containsAny(text, [
+    "buy",
+    "lease",
+    "payment",
+    "new car",
+    "vehicle",
+    "shopping",
+    "looking"
+  ]);
+
 }
 
 function send() {
@@ -151,68 +213,93 @@ function send() {
 
   let reply = "";
 
+  // =========================
+  // GLOBAL CONVERSATION END
+  // =========================
+
+  if (isConversationEnd(lowerInput)) {
+
+    reply =
+      "You’re very welcome — feel free to come back anytime if you need help with vehicles, trade values, or dealership questions. Have a great day!";
+
+    addMessage("AI", reply, "ai");
+
+    inputBox.value = "";
+
+    step = 999;
+
+    return;
+
+  }
+
+  // =========================
   // GREETING
+  // =========================
+
   if (step === 0) {
 
     reply =
       "Hello! I’m your AI automotive assistant — how can I help make your visit easier today?";
 
     step = 1;
+
   }
 
-  // INTENT DETECTION
+  // =========================
+  // MAIN INTENT DETECTION
+  // =========================
+
   else if (step === 1) {
 
     customer.intent = input;
 
-    if (
-      lowerInput.includes("sell") ||
-      lowerInput.includes("trade") ||
-      lowerInput.includes("value")
-    ) {
+    // TRADE FLOW
+    if (isTradeIntent(lowerInput)) {
+
+      customer.tradeMentioned = true;
 
       reply =
-        "Absolutely — I’d be happy to help with that. What’s the year, make, and model of the vehicle?";
+        "Absolutely — I’d be happy to help with your trade appraisal. What’s the year, make, and model of the vehicle?";
 
-      step = 2;
+      step = 10;
+
     }
 
-    else if (
-      lowerInput.includes("buy") ||
-      lowerInput.includes("payment") ||
-      lowerInput.includes("lease") ||
-      lowerInput.includes("new car") ||
-      lowerInput.includes("vehicle")
-    ) {
+    // SHOPPING FLOW
+    else if (isShoppingIntent(lowerInput)) {
 
       reply =
         "Absolutely — are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
 
-      step = 20;
+      step = 50;
+
     }
 
     else {
 
       reply =
-        "I can help with trade values, vehicle research, purchase options, and dealership questions. What would you like help with?";
+        "I can help with trade values, vehicle research, payment options, and dealership questions. What would you like help with?";
+
     }
+
   }
 
   // =========================
-  // TRADE APPRAISAL FLOW
+  // TRADE FLOW
   // =========================
 
-  else if (step === 2) {
+  else if (step === 10) {
 
     customer.vehicle = input;
 
     reply =
       "How many miles are on the vehicle?";
 
-    step = 3;
+    step = 11;
+
   }
 
-  else if (step === 3) {
+  else if (step === 11) {
 
     customer.miles =
       parseInt(input.replace(/,/g, "")) || 0;
@@ -220,20 +307,22 @@ function send() {
     reply =
       "How would you describe the condition? (clean / average / needs work)";
 
-    step = 4;
+    step = 12;
+
   }
 
-  else if (step === 4) {
+  else if (step === 12) {
 
     customer.condition = lowerInput;
 
     reply =
       "Are there any mechanical issues or warning lights?";
 
-    step = 5;
+    step = 13;
+
   }
 
-  else if (step === 5) {
+  else if (step === 13) {
 
     customer.mechanical = lowerInput;
 
@@ -257,11 +346,14 @@ function send() {
 
     // mechanical adjustment
     if (
-      customer.mechanical.includes("yes") ||
-      customer.mechanical.includes("light") ||
-      customer.mechanical.includes("issue") ||
-      customer.mechanical.includes("warning") ||
-      customer.mechanical.includes("engine")
+      containsAny(customer.mechanical, [
+        "yes",
+        "light",
+        "issue",
+        "warning",
+        "engine",
+        "problem"
+      ])
     ) {
       value -= 4000;
     }
@@ -277,37 +369,54 @@ function send() {
       high +
       ". Keep in mind final value can vary depending on inspection, market conditions, and dealership demand.";
 
-    step = 6;
+    step = 14;
+
   }
 
-  else if (step === 6) {
+  else if (step === 14) {
 
-    reply =
-      "If you'd like, I can also help you explore possible dealer offers or purchase options. Would you like to continue? (yes/no)";
-
-    step = 7;
-  }
-
-  else if (step === 7) {
-
-    // TRADE DETECTED
+    // CUSTOMER ALREADY SHOPPING
     if (
-      lowerInput.includes("trade")
+      customer.shoppingType !== "" ||
+      customer.paymentGoal !== ""
     ) {
 
       reply =
-        "Absolutely — I can help with your trade as well. What’s the year, make, and model of the vehicle?";
+        "I can also help explore vehicle options around your shopping preferences and payment goals. Would you like to continue? (yes/no)";
 
-      step = 2;
+    }
+
+    else {
+
+      reply =
+        "If you'd like, I can also help you explore vehicle options or possible dealer offers. Would you like to continue? (yes/no)";
+
+    }
+
+    step = 15;
+
+  }
+
+  else if (step === 15) {
+
+    // CUSTOMER TALKS ABOUT SHOPPING
+    if (isShoppingIntent(lowerInput)) {
+
+      reply =
+        "Absolutely — are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
+
+      step = 50;
+
     }
 
     // YES
     else if (lowerInput === "yes") {
 
       reply =
-        "Great — is your vehicle currently paid off, or do you still have a loan balance remaining?";
+        "Great — is your current vehicle paid off, or do you still have a loan balance remaining?";
 
-      step = 8;
+      step = 16;
+
     }
 
     // SOFT NO
@@ -317,6 +426,7 @@ function send() {
         "No problem at all — I’m still here if you’d like help with vehicle research, trade options, or dealership questions anytime.";
 
       step = 100;
+
     }
 
     else {
@@ -324,86 +434,101 @@ function send() {
       reply =
         "Please type yes or no.";
 
-      step = 7;
     }
+
   }
 
-  else if (step === 8) {
+  else if (step === 16) {
 
-    customer.payoff = input;
+    customer.payoffStatus = input;
 
     reply =
       "Are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
 
-    step = 20;
+    step = 50;
+
   }
 
   // =========================
   // SHOPPING FLOW
   // =========================
 
-  else if (step === 20) {
+  else if (step === 50) {
 
-    customer.vehicleType = input;
+    customer.shoppingType = input;
 
     reply =
       "Do you have a target monthly payment range in mind?";
 
-    step = 21;
+    step = 51;
+
   }
 
-  else if (step === 21) {
+  else if (step === 51) {
 
     customer.paymentGoal = input;
 
     reply =
       "Great — are you interested in a sedan, SUV, truck, or still exploring options?";
 
-    step = 22;
+    step = 52;
+
   }
 
-  else if (step === 22) {
+  else if (step === 52) {
 
     customer.bodyStyle = input;
 
-    reply =
-      "Perfect — I can help explore options that may fit your preferences and payment goals.";
+    // TRADE MENTION
+    if (isTradeIntent(lowerInput)) {
 
-    // CUSTOMER MENTIONS TRADE
-    if (
-      lowerInput.includes("trade")
-    ) {
+      customer.tradeMentioned = true;
 
-      reply +=
-        " I can also help evaluate your trade. What’s the year, make, and model of the vehicle?";
+      reply =
+        "Absolutely — I can help evaluate your trade while we explore options around your payment goals. What’s the year, make, and model of the vehicle?";
 
-      step = 2;
+      step = 10;
+
     }
 
     else {
 
+      reply =
+        "Perfect — I can help explore options that may fit your preferences and payment goals.";
+
+      // MEMORY CONTEXT
+      if (customer.tradeMentioned) {
+
+        reply +=
+          " We can also factor in your trade during the process.";
+
+      }
+
       reply +=
         " Would you like to connect with a dealership team member or schedule a test drive? (yes/no)";
 
-      step = 30;
+      step = 60;
+
     }
+
   }
 
   // =========================
   // LEAD CAPTURE
   // =========================
 
-  else if (step === 30) {
+  else if (step === 60) {
 
-    // TRADE MENTION
-    if (
-      lowerInput.includes("trade")
-    ) {
+    // CUSTOMER TALKS ABOUT TRADE
+    if (isTradeIntent(lowerInput)) {
+
+      customer.tradeMentioned = true;
 
       reply =
-        "Absolutely — I can help with your trade as well. What’s the year, make, and model of the vehicle?";
+        "Absolutely — I can help evaluate your trade while we continue exploring vehicle options. What’s the year, make, and model of the vehicle?";
 
-      step = 2;
+      step = 10;
+
     }
 
     // YES
@@ -412,7 +537,8 @@ function send() {
       reply =
         "Great — what’s your name?";
 
-      step = 31;
+      step = 61;
+
     }
 
     // SOFT NO
@@ -422,6 +548,7 @@ function send() {
         "No problem at all — I’m still here if you’d like help researching vehicles or exploring your options further.";
 
       step = 100;
+
     }
 
     else {
@@ -429,31 +556,33 @@ function send() {
       reply =
         "Please type yes or no.";
 
-      step = 30;
     }
+
   }
 
-  else if (step === 31) {
+  else if (step === 61) {
 
     customer.name = input;
 
     reply =
       "What’s your phone number?";
 
-    step = 32;
+    step = 62;
+
   }
 
-  else if (step === 32) {
+  else if (step === 62) {
 
     customer.phone = input;
 
     reply =
       "What’s your email address?";
 
-    step = 33;
+    step = 63;
+
   }
 
-  else if (step === 33) {
+  else if (step === 63) {
 
     customer.email = input;
 
@@ -461,6 +590,7 @@ function send() {
       "Thanks, your information has been submitted successfully. A participating dealership team member may reach out to assist with next steps, vehicle options, or scheduling a visit.";
 
     step = 100;
+
   }
 
   // =========================
@@ -469,13 +599,16 @@ function send() {
 
   else if (step === 100) {
 
-    // CONVERSATION END
-    if (isConversationEnd(lowerInput)) {
+    // TRADE QUESTIONS
+    if (isTradeIntent(lowerInput)) {
+
+      customer.tradeMentioned = true;
 
       reply =
-        "You’re very welcome — feel free to come back anytime if you need help with vehicles, trade values, or dealership questions. Have a great day!";
+        "I’d be happy to help with a trade appraisal. What’s the year, make, and model of the vehicle?";
 
-      step = 101;
+      step = 10;
+
     }
 
     // PAYMENT QUESTIONS
@@ -485,31 +618,21 @@ function send() {
     ) {
 
       reply =
-        "I can definitely help explore options around your target payment. Are you considering new, certified pre-owned, or pre-owned vehicles?";
+        "I can definitely help explore options around your target payment. Are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
 
-      step = 20;
-    }
+      step = 50;
 
-    // TRADE QUESTIONS
-    else if (
-      lowerInput.includes("trade") ||
-      lowerInput.includes("value")
-    ) {
-
-      reply =
-        "I’d be happy to help with a trade appraisal. What’s the year, make, and model of the vehicle?";
-
-      step = 2;
     }
 
     // BUYING PROCESS
     else if (
-      lowerInput.includes("buying process") ||
-      lowerInput.includes("process")
+      lowerInput.includes("process") ||
+      lowerInput.includes("buying")
     ) {
 
       reply =
         "The process usually starts with researching vehicle options and evaluating your trade if you have one. From there, we can explore payment goals, vehicle choices, test drives, and then connect you with a dealership team member when you're ready.";
+
     }
 
     // PAYOFF
@@ -520,17 +643,33 @@ function send() {
 
       reply =
         "Having a payoff is completely normal. Once we understand your approximate payoff amount and trade value, we can help explore vehicle options and payment ranges that may work best for you.";
+
+    }
+
+    // SHOPPING QUESTIONS
+    else if (isShoppingIntent(lowerInput)) {
+
+      reply =
+        "Absolutely — are you considering a new vehicle, certified pre-owned, or pre-owned vehicle?";
+
+      step = 50;
+
     }
 
     else {
 
       reply =
-        "I’m here to help with trade values, vehicle research, purchase options, and dealership questions. What would you like help with?";
+        "I’m here to help with trade values, vehicle research, payment options, and dealership questions. What would you like help with?";
+
     }
+
   }
 
+  // =========================
   // FINAL CLOSED MODE
-  else if (step === 101) {
+  // =========================
+
+  else if (step === 999) {
 
     reply =
       "Have a great day!";
@@ -542,6 +681,8 @@ function send() {
   inputBox.value = "";
 
 }
+
+// ENTER KEY SUPPORT
 
 document
   .getElementById("input")
