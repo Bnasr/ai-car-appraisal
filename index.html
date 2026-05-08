@@ -226,17 +226,13 @@ function send() {
 
     inputBox.value = "";
 
-    step = 999;
-
-    return;
-
   }
 
   // =========================
   // GREETING
   // =========================
 
-  if (step === 0) {
+  else if (step === 0) {
 
     reply =
       "Hello! I’m your AI automotive assistant — how can I help make your visit easier today?";
@@ -375,7 +371,6 @@ function send() {
 
   else if (step === 14) {
 
-    // CUSTOMER ALREADY SHOPPING
     if (
       customer.shoppingType !== "" ||
       customer.paymentGoal !== ""
@@ -399,7 +394,6 @@ function send() {
 
   else if (step === 15) {
 
-    // CUSTOMER TALKS ABOUT SHOPPING
     if (isShoppingIntent(lowerInput)) {
 
       reply =
@@ -409,7 +403,6 @@ function send() {
 
     }
 
-    // YES
     else if (lowerInput === "yes") {
 
       reply =
@@ -419,7 +412,6 @@ function send() {
 
     }
 
-    // SOFT NO
     else if (isSoftNo(lowerInput)) {
 
       reply =
@@ -479,7 +471,6 @@ function send() {
 
     customer.bodyStyle = input;
 
-    // TRADE MENTION
     if (isTradeIntent(lowerInput)) {
 
       customer.tradeMentioned = true;
@@ -496,7 +487,6 @@ function send() {
       reply =
         "Perfect — I can help explore options that may fit your preferences and payment goals.";
 
-      // MEMORY CONTEXT
       if (customer.tradeMentioned) {
 
         reply +=
@@ -519,7 +509,6 @@ function send() {
 
   else if (step === 60) {
 
-    // CUSTOMER TALKS ABOUT TRADE
     if (isTradeIntent(lowerInput)) {
 
       customer.tradeMentioned = true;
@@ -531,7 +520,6 @@ function send() {
 
     }
 
-    // YES
     else if (lowerInput === "yes") {
 
       reply =
@@ -541,7 +529,6 @@ function send() {
 
     }
 
-    // SOFT NO
     else if (isSoftNo(lowerInput)) {
 
       reply =
@@ -599,7 +586,6 @@ function send() {
 
   else if (step === 100) {
 
-    // TRADE QUESTIONS
     if (isTradeIntent(lowerInput)) {
 
       customer.tradeMentioned = true;
@@ -611,7 +597,6 @@ function send() {
 
     }
 
-    // PAYMENT QUESTIONS
     else if (
       lowerInput.includes("payment") ||
       lowerInput.includes("$")
@@ -624,7 +609,6 @@ function send() {
 
     }
 
-    // BUYING PROCESS
     else if (
       lowerInput.includes("process") ||
       lowerInput.includes("buying")
@@ -635,7 +619,6 @@ function send() {
 
     }
 
-    // PAYOFF
     else if (
       lowerInput.includes("payoff") ||
       lowerInput.includes("loan")
@@ -646,7 +629,6 @@ function send() {
 
     }
 
-    // SHOPPING QUESTIONS
     else if (isShoppingIntent(lowerInput)) {
 
       reply =
@@ -661,7 +643,7 @@ function send() {
       reply =
         "I’m here to help with trade values, vehicle research, payment options, and dealership questions. What would you like help with?";
 
-  }
+    }
 
   }
 
